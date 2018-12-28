@@ -13,7 +13,7 @@ import {
   Button, 
   Icon 
 } from 'react-native-elements';
-import { AreaChart, Grid } from 'react-native-svg-charts'
+import { AreaChart, Grid , YAxis} from 'react-native-svg-charts'
 import { WebBrowser } from 'expo';
 import * as shape from 'd3-shape'
 
@@ -25,7 +25,7 @@ export default class HomeScreen extends React.Component {
   };
 
   data1 = [ 21, 22, 22, 21, 21.2, 20, 19, 18, 18, 18, 18.5, 19, 19.3, 21 ]
-  data2 = [ 21, 22, 22, 21, 21.2, 20, 19, 18, 18, 18, 18.5, 19, 19.3, 21 ]
+  data2 = [ 4, 6, 8, 9, 21.2, 20, 19, 18, 18, 18, 18.5, 19, 19.3, 21 ]
   data3 = [ 18, 16, 16.5, 10, 21.2, 11, 22, 18, 22, 12, 22, 11, 22.3, 21 ]
 
   render() {
@@ -34,10 +34,12 @@ export default class HomeScreen extends React.Component {
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
           <Card
             title='Living Room'
-            >
+            >             
               <AreaChart
                   style={{ height: 200 }}
                   data={ this.data1 }
+                  animate= {true}
+                  animationDuration={500}
                   contentInset={{ top: 30, bottom: 30 }}
                   curve={ shape.curveNatural }
                   svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
@@ -45,7 +47,7 @@ export default class HomeScreen extends React.Component {
               <Grid/>
             </AreaChart>
             <Text style={{marginBottom: 10}}>
-              The idea with React Native Elements is more about component structure than actual design.
+              High: 23C Low: 18C Heat Requets: 10
             </Text>
             <Button
               icon={<Icon name='code' color='#ffffff' />}
