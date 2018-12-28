@@ -1,6 +1,7 @@
 node_modules/**/*
 .expo/*
 npm-debug.*
+__tests__
 *.jks
 *.p12
 *.key
