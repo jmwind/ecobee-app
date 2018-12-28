@@ -6,6 +6,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import DragScreen from '../screens/DragScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -36,7 +37,7 @@ LinksStack.navigationOptions = {
 };
 
 const SettingsStack = createStackNavigator({
-  Settings: SettingsScreen,
+  Settings: DragScreen,
 });
 
 SettingsStack.navigationOptions = {

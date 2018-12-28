@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Animated, ScrollView, StyleSheet } from 'react-native';
+import { View, Animated, ScrollView, StyleSheet, PanResponder, Text } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 import { Easing } from 'react-native-reanimated';
 
@@ -10,26 +10,42 @@ export default class LinksScreen extends React.Component {
 
   animatedValue = new Animated.Value(0);
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      pan: new Animated.ValueXY()
+    }
+    this.panResponder = PanResponder.create({    
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: Animated.event([null,{ 
+          dx : this.state.pan.x,
+          dy : this.state.pan.y
+      }]),
+      onPanResponderRelease: (e, gesture) => {} 
+    });
+  }
+
   componentDidMount() {
-    this.animate();
+    //this.animate();
   }
 
   animate() {
+    console.log("starting animation");
     this.animatedValue.setValue(0);
     Animated.timing(
       this.animatedValue,
       {
         toValue: 1,
-        duration: 8000,
+        duration: 3000,
         easing: Easing.linear
       }
-    ).start(()=>this.animate());
+    ).start();
   }
 
   render() {
     const marginLeft = this.animatedValue.interpolate({
       inputRange: [0,1],
-      outputRange: [0,500]
+      outputRange: [0,100]
       });
 
     return (
@@ -39,19 +55,33 @@ export default class LinksScreen extends React.Component {
             * content, we just wanted to provide you with some helpful links */}
           <ExpoLinksView />
         </ScrollView>
-        <View style={styles.container}>
-          <Animated.View
+        <View 
+            onPress={this._pressBox}             
             style={{
-              height: 25,
-              width: 25,            
-              marginLeft: marginLeft,
-              backgroundColor: 'red'
-            }} />
-          </View>
+              position: 'absolute',
+              top: 300,
+              left: 100
+            }}>
+          <Animated.View
+            {...this.panResponder.panHandlers}  
+            style={[
+              this.state.pan.getLayout(),
+              {
+                height: 50,
+                width: 50,                      
+                //marginLeft: marginLeft,
+                backgroundColor: 'blue'
+              }
+            ]}>              
+            <Text>Drag me!</Text>
+          </Animated.View>
         </View>
+      </View>
     );
   }
+
 }
+
 
 const styles = StyleSheet.create({
   container: {
