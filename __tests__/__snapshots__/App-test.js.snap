@@ -139,17 +139,14 @@ exports[`App snapshot renders the root without loading screen 1`] = `
                     }
                   >
                     <View
+                      height={110}
                       style={
                         Object {
                           "alignItems": "center",
-                          "backgroundColor": "grey",
-                          "borderBottomColor": "black",
+                          "borderBottomColor": "grey",
                           "borderBottomWidth": 1,
-                          "fontSize": 24,
-                          "height": 100,
-                          "justifyContent": "center",
+                          "justifyContent": "flex-end",
                           "paddingVertical": 0,
-                          "textAlign": "center",
                         }
                       }
                     >
@@ -169,8 +166,25 @@ exports[`App snapshot renders the root without loading screen 1`] = `
                           }
                         }
                       >
-                        <Text>
-                          Kirchoffer Ave Monitoring
+                        <Text
+                          style={
+                            Object {
+                              "fontSize": 20,
+                              "textAlign": "center",
+                            }
+                          }
+                        >
+                          Kirchoffer Comfort
+                        </Text>
+                        <Text
+                          style={
+                            Object {
+                              "fontSize": 12,
+                              "textAlign": "center",
+                            }
+                          }
+                        >
+                          2344 samples over last 5 days
                         </Text>
                       </View>
                     </View>

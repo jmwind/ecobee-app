@@ -28,16 +28,28 @@ export default class HomeScreen extends React.Component {
   data2 = [ 4, 6, 8, 9, 21.2, 20, 19, 18, 18, 18, 18.5, 19, 19.3, 21 ]
   data3 = [ 18, 16, 16.5, 10, 21.2, 11, 22, 18, 22, 12, 22, 11, 22.3, 21 ]
   h = 110;
+  collapsed = false;
 
   render() {
+
+    let topSummaryText;
+    if(! this.collapsed) {
+      topSummaryText = "2344 samples over last 5 days";
+    } else {
+      topSummaryText = "";
+    }
+
     return (
       <View style={styles.container}>
           <View style={styles.topBar} height={this.h}>
             <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.topBarText}>Kirchoffer Ave Monitoring</Text>
+              <Text style={styles.topBarText}>Kirchoffer Comfort</Text>
+              {!this.collapsed && 
+                <Text style={styles.topBarTextSmall}>{topSummaryText}</Text>
+              }
             </TouchableOpacity>
           </View>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} scrollEventThrottle={50} onScroll={this.handleScroll.bind(this)}>
+        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} scrollEventThrottle={50} onScroll={this._handleScroll.bind(this)}>
           <Card
             title='Living Room'
             >             
@@ -52,14 +64,9 @@ export default class HomeScreen extends React.Component {
               >
               <Grid/>
             </AreaChart>
-            <Text style={{marginBottom: 10}}>
+            <Text style={{margin: 8}}>
               High: 23C Low: 18C Heat Requets: 10
             </Text>
-            <Button
-              icon={<Icon name='code' color='#ffffff' />}
-              backgroundColor='#03A9F4'
-              buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-              title='Details' />
           </Card>
           <Card
             title='Garage'>
@@ -72,14 +79,9 @@ export default class HomeScreen extends React.Component {
               >
               <Grid/>
             </AreaChart>
-            <Text style={{marginBottom: 10}}>
+            <Text style={{margin: 8}}>
               Average temperature is high. Lower desired temperature.
-            </Text>
-            <Button
-              icon={<Icon name='code' color='#ffffff' />}
-              backgroundColor='#03A9F4'
-              buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-              title='Details' />
+            </Text>           
           </Card>
           <Card
             title='Master Bedroom'>
@@ -92,45 +94,10 @@ export default class HomeScreen extends React.Component {
               >
               <Grid/>
             </AreaChart>
-            <Text style={{marginBottom: 10}}>
+            <Text style={{margin: 8}}>
               Average temperature is high. Lower desired temperature.
-            </Text>
-            <Button
-              icon={<Icon name='code' color='#ffffff' />}
-              backgroundColor='#03A9F4'
-              buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-              title='Details' />
+            </Text>           
           </Card>
-          <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
-              }
-              style={styles.welcomeImage}
-            />
-          </View>
-
-          <View style={styles.getStartedContainer}>
-            {this._maybeRenderDevelopmentModeWarning()}
-
-            <Text style={styles.getStartedText}>Get started by opening</Text>
-
-            <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-              <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
-            </View>
-
-            <Text style={styles.getStartedText}>
-              Welcome to Kirchoffer home monitoring.
-            </Text>
-          </View>
-
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
-            </TouchableOpacity>
-          </View>
         </ScrollView>
       </View>
     );
@@ -159,27 +126,22 @@ export default class HomeScreen extends React.Component {
     }
   }
 
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
-  };
-
-  handleScroll (event) {
-    console.log(event.nativeEvent);   
+  _handleScroll (event) {
+    //console.log(event.nativeEvent);   
     if(event.nativeEvent.contentOffset.y <= 10) {
       this.h = 110;
+      this.collapsed = false;
+      styles.topBarTextSmall.fontSize = 12;
+      this.forceUpdate();
     } else {
-      if(event.nativeEvent.contentOffset.y < 30 && this.h > 80) {
-        this.h -= event.nativeEvent.contentOffset.y;
+      if(event.nativeEvent.contentOffset.y > 15 && ! this.collapsed) {
+        this.h = 80;
+        this.collapsed = true;
+        styles.topBarTextSmall.fontSize = 1;
+        this.forceUpdate();
       }
     }
-    console.log(this.h); 
-    this.forceUpdate();
+    //console.log(this.h);     
   }
 }
 
@@ -268,7 +230,12 @@ styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   topBarText: {
-    fontSize: 20
+    fontSize: 20,
+    textAlign: 'center'
+  },
+  topBarTextSmall: {
+    fontSize: 12,
+    textAlign: 'center'
   },
   helpContainer: {
     marginTop: 15,
