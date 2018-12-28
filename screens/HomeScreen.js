@@ -27,11 +27,17 @@ export default class HomeScreen extends React.Component {
   data1 = [ 21, 22, 22, 21, 21.2, 20, 19, 18, 18, 18, 18.5, 19, 19.3, 21 ]
   data2 = [ 4, 6, 8, 9, 21.2, 20, 19, 18, 18, 18, 18.5, 19, 19.3, 21 ]
   data3 = [ 18, 16, 16.5, 10, 21.2, 11, 22, 18, 22, 12, 22, 11, 22.3, 21 ]
+  h = 110;
 
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+          <View style={styles.topBar} height={this.h}>
+            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
+              <Text style={styles.topBarText}>Kirchoffer Ave Monitoring</Text>
+            </TouchableOpacity>
+          </View>
+        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} scrollEventThrottle={50} onScroll={this.handleScroll.bind(this)}>
           <Card
             title='Living Room'
             >             
@@ -162,9 +168,22 @@ export default class HomeScreen extends React.Component {
       'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
     );
   };
+
+  handleScroll (event) {
+    console.log(event.nativeEvent);   
+    if(event.nativeEvent.contentOffset.y <= 10) {
+      this.h = 110;
+    } else {
+      if(event.nativeEvent.contentOffset.y < 30 && this.h > 80) {
+        this.h -= event.nativeEvent.contentOffset.y;
+      }
+    }
+    console.log(this.h); 
+    this.forceUpdate();
+  }
 }
 
-const styles = StyleSheet.create({
+styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -177,7 +196,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   contentContainer: {
-    paddingTop: 30,
+    paddingTop: 15,
   },
   welcomeContainer: {
     alignItems: 'center',
@@ -239,6 +258,17 @@ const styles = StyleSheet.create({
   },
   navigationFilename: {
     marginTop: 5,
+  },
+  topBar: {
+    //height: 125,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingVertical: 0,
+    borderBottomColor: 'grey',
+    borderBottomWidth: 1,
+  },
+  topBarText: {
+    fontSize: 20
   },
   helpContainer: {
     marginTop: 15,

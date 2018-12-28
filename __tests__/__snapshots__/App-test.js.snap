@@ -137,7 +137,44 @@ exports[`App snapshot renders the root without loading screen 1`] = `
                         "flex": 1,
                       }
                     }
-                  />
+                  >
+                    <View
+                      style={
+                        Object {
+                          "alignItems": "center",
+                          "backgroundColor": "grey",
+                          "borderBottomColor": "black",
+                          "borderBottomWidth": 1,
+                          "fontSize": 24,
+                          "height": 100,
+                          "justifyContent": "center",
+                          "paddingVertical": 0,
+                          "textAlign": "center",
+                        }
+                      }
+                    >
+                      <View
+                        accessible={true}
+                        isTVSelectable={true}
+                        onResponderGrant={[Function]}
+                        onResponderMove={[Function]}
+                        onResponderRelease={[Function]}
+                        onResponderTerminate={[Function]}
+                        onResponderTerminationRequest={[Function]}
+                        onStartShouldSetResponder={[Function]}
+                        style={
+                          Object {
+                            "opacity": 1,
+                            "paddingVertical": 15,
+                          }
+                        }
+                      >
+                        <Text>
+                          Kirchoffer Ave Monitoring
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
                 </View>
               </View>
               <View
