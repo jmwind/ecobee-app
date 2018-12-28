@@ -6,7 +6,8 @@ import {
     PanResponder,
     Animated,
     Easing,
-    Dimensions 
+    Dimensions,
+    TouchableOpacity
 } from 'react-native';
 
 export default class DragScreen extends Component{
@@ -19,7 +20,7 @@ export default class DragScreen extends Component{
             pan             : new Animated.ValueXY()
         };
 
-        this.panResponder = PanResponder.create({
+        this.panResponder = PanResponder.create({            
             onStartShouldSetPanResponder    : () => true,
             onPanResponderMove              : Animated.event([null,{
                 dx  : this.state.pan.x,
@@ -27,10 +28,12 @@ export default class DragScreen extends Component{
             }]),
             onPanResponderRelease           : (e, gesture) => {
                 if(this.isDropZone(gesture)){
+                    console.log("dropped in zone");
                     this.setState({
                         showDraggable : false
                     });
                 }else{
+                    console.log("dropped outside zone");
                     Animated.spring(
                         this.state.pan,
                         {toValue:{x:0,y:0}}
@@ -42,7 +45,9 @@ export default class DragScreen extends Component{
 
     isDropZone(gesture){
         var dz = this.state.dropZoneValues;
-        return gesture.moveY > dz.y && gesture.moveY < dz.y + dz.height;
+        console.log(dz);
+        console.log(gesture.moveY);
+        return gesture.moveY > dz.y && gesture.moveY < (dz.y + dz.height + 100);
     }
 
     setDropZoneValues(event){
@@ -53,7 +58,7 @@ export default class DragScreen extends Component{
 
     render(){
         return (
-            <View style={styles.mainContainer}>
+            <TouchableOpacity style={styles.mainContainer} onPress={this._spawn.bind(this)}>
                 <View 
                     onLayout={this.setDropZoneValues.bind(this)}
                     style={styles.dropZone}>
@@ -61,7 +66,7 @@ export default class DragScreen extends Component{
                 </View>
 
                 {this.renderDraggable()}
-            </View>
+            </TouchableOpacity>
         );
     }
 
@@ -78,7 +83,20 @@ export default class DragScreen extends Component{
             );
         }
     }
+
+    _spawn() {
+        console.log("spawn");
+        this.setState({
+            showDraggable : true
+        });
+        Animated.spring(
+            this.state.pan,
+            {toValue:{x:0,y:0}}
+        ).start();
+    }
 }
+
+
 
 let CIRCLE_RADIUS = 36;
 let Window = Dimensions.get('window');
