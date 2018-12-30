@@ -9,34 +9,38 @@ import {
     Dimensions,
     TouchableOpacity
 } from 'react-native';
+import Confetti from 'react-native-confetti';
 
 export default class DragScreen extends Component{
     constructor(props){
         super(props);
 
         this.state = {
-            showDraggable   : true,
-            dropZoneValues  : null,
-            pan             : new Animated.ValueXY()
+            showDraggable: true,
+            dropZoneValues: null,
+            pan: new Animated.ValueXY(),
+            targetText: 'Drag the circle here!'
         };
 
         this.panResponder = PanResponder.create({            
-            onStartShouldSetPanResponder    : () => true,
-            onPanResponderMove              : Animated.event([null,{
-                dx  : this.state.pan.x,
-                dy  : this.state.pan.y
+            onStartShouldSetPanResponder: () => true,
+            onPanResponderMove: Animated.event([null,{
+                dx: this.state.pan.x,
+                dy: this.state.pan.y
             }]),
-            onPanResponderRelease           : (e, gesture) => {
-                if(this.isDropZone(gesture)){
-                    console.log("dropped in zone");
+            onPanResponderRelease: (e, gesture) => {
+                if(this.isDropZone(gesture)) {
                     this.setState({
-                        showDraggable : false
+                        showDraggable: false,
+                        targetText: "THANK YOU!!\nPress here to start again"
                     });
-                }else{
-                    console.log("dropped outside zone");
+                    if(this._confettiView) {
+                        this._confettiView.startConfetti();
+                    }
+                } else {
                     Animated.spring(
                         this.state.pan,
-                        {toValue:{x:0,y:0}}
+                        {toValue:{x:0,y:0}, bounciness: 20, speed: 20}
                     ).start();
                 }
             }
@@ -45,8 +49,6 @@ export default class DragScreen extends Component{
 
     isDropZone(gesture){
         var dz = this.state.dropZoneValues;
-        console.log(dz);
-        console.log(gesture.moveY);
         return gesture.moveY > dz.y && gesture.moveY < (dz.y + dz.height + 100);
     }
 
@@ -58,13 +60,13 @@ export default class DragScreen extends Component{
 
     render(){
         return (
-            <TouchableOpacity style={styles.mainContainer} onPress={this._spawn.bind(this)}>
+            <TouchableOpacity style={styles.mainContainer} onPress={this._spawnCircle.bind(this)}>
                 <View 
                     onLayout={this.setDropZoneValues.bind(this)}
                     style={styles.dropZone}>
-                    <Text style={styles.text}>Drop me here!</Text>
+                    <Text style={styles.text}>{this.state.targetText}</Text>
                 </View>
-
+                <Confetti ref={(node) => this._confettiView = node}/>
                 {this.renderDraggable()}
             </TouchableOpacity>
         );
@@ -84,11 +86,12 @@ export default class DragScreen extends Component{
         }
     }
 
-    _spawn() {
-        console.log("spawn");
+    _spawnCircle() {
         this.setState({
-            showDraggable : true
+            showDraggable : true,
+            targetText: "Drop here again!"
         });
+        this._confettiView.stopConfetti();
         Animated.spring(
             this.state.pan,
             {toValue:{x:0,y:0}}
@@ -96,34 +99,32 @@ export default class DragScreen extends Component{
     }
 }
 
-
-
 let CIRCLE_RADIUS = 36;
 let Window = Dimensions.get('window');
 let styles = StyleSheet.create({
     mainContainer: {
-        flex    : 1
+        flex: 1
     },
-    dropZone    : {
-        height  : 100,
+    dropZone: {
+        height: 100,
         backgroundColor:'#2c3e50'
     },
-    text        : {
-        marginTop   : 25,
-        marginLeft  : 5,
-        marginRight : 5,
-        textAlign   : 'center',
-        color       : '#fff'
+    text: {
+        marginTop: 25,
+        marginLeft: 5,
+        marginRight: 5,
+        textAlign: 'center',
+        color: '#fff'
     },
     draggableContainer: {
-        position    : 'absolute',
-        top         : Window.height/2 - CIRCLE_RADIUS,
-        left        : Window.width/2 - CIRCLE_RADIUS,
+        position: 'absolute',
+        top: Window.height/2 - CIRCLE_RADIUS,
+        left: Window.width/2 - CIRCLE_RADIUS,
     },
-    circle      : {
-        backgroundColor     : '#1abc9c',
-        width               : CIRCLE_RADIUS*2,
-        height              : CIRCLE_RADIUS*2,
-        borderRadius        : CIRCLE_RADIUS
+    circle: {
+        backgroundColor: '#1abc9c',
+        width: CIRCLE_RADIUS*2,
+        height: CIRCLE_RADIUS*2,
+        borderRadius: CIRCLE_RADIUS
     }
 });
