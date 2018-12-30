@@ -17,6 +17,10 @@ import {
 import { AreaChart, LineChart, BarChart, Grid, YAxis, HorizontalLine } from 'react-native-svg-charts'
 import * as shape from 'd3-shape'
 
+const HEADER_MAX_HEIGHT = 200;
+const HEADER_MIN_HEIGHT = 90;
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
@@ -29,7 +33,8 @@ export default class HomeScreen extends React.Component {
       data2: [ 0, 0, 0, 0, 0, 0, 0, 0 ],
       data3: [ 0, 0, 0, 0, 0, 0, 0, 0 ],
       h: 110,
-      collapsed: false
+      collapsed: false,
+      scrollY: new Animated.Value(0)
     }
   }
 
@@ -47,21 +52,30 @@ export default class HomeScreen extends React.Component {
   }
 
   render() {
+    const headerHeight = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_SCROLL_DISTANCE],
+      outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+      extrapolate: 'clamp',
+    });
+
     return (
       <View style={styles.container}>
-          <Animated.View style={styles.topBar} height={this.state.h}>
-
+          <Animated.View style={[styles.topBar, {height: headerHeight}]}>
+            <View style={styles.topBarView}>
               <Text style={styles.topBarText}>Our Home</Text>
-              {!this.state.collapsed && 
+              {
+                !this.state.collapsed && 
                 <Text style={styles.topBarTextSmall}>Last 5 days. High 23ºC and Low 10ºC</Text>
               }
-
+            </View>
           </Animated.View>
         <ScrollView 
-          style={styles.container} 
+          style={styles.scrollContainer} 
           contentContainerStyle={styles.contentContainer} 
-          scrollEventThrottle={50} 
-          onScroll={this._handleScroll.bind(this)}>
+          scrollEventThrottle={16} 
+          onScroll={Animated.event(
+            [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}]
+          )}>
           <Card
             title='Living Room'
             featuredTitle='High 1, Low 2'> 
@@ -93,7 +107,7 @@ export default class HomeScreen extends React.Component {
             </Text>
           </Card>
           <Card
-            title='Garage'>
+            title='Cold Garage'>
             <AreaChart
                   style={{ height: 150 }}
                   data={ this.state.data2 }
@@ -140,6 +154,11 @@ export default class HomeScreen extends React.Component {
 
 styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollContainer: {
+    marginTop: HEADER_MAX_HEIGHT,
     flex: 1,
     backgroundColor: '#fff',
   },
@@ -215,15 +234,23 @@ styles = StyleSheet.create({
     marginTop: 5,
   },
   topBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#03A9F4',
+    overflow: 'hidden'
+  },
+  topBarView: {
+    marginTop: 28,
+    height: HEADER_MAX_HEIGHT - 5,
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingVertical: 0,
-    borderBottomColor: '#c0c0c0',
-    borderBottomWidth: 1,
+    justifyContent: 'center',
   },
   topBarText: {
-    fontSize: 20,
-    margin: 4,
+    backgroundColor: 'transparent',
+    color: 'white',
+    fontSize: 18,
     textAlign: 'center'
   },
   topBarTextSmall: {

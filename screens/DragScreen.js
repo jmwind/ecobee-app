@@ -24,7 +24,7 @@ export default class DragScreen extends Component{
 
         this.panResponder = PanResponder.create({            
             onStartShouldSetPanResponder: () => true,
-            onPanResponderMove: Animated.event([null,{
+            onPanResponderMove: Animated.event([null,{  
                 dx: this.state.pan.x,
                 dy: this.state.pan.y
             }]),
