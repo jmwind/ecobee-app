@@ -40,7 +40,7 @@ export default class DragScreen extends Component{
                 } else {
                     Animated.spring(
                         this.state.pan,
-                        {toValue:{x:0,y:0}, bounciness: 20, speed: 20}
+                        {toValue:{x:0,y:0}, bounciness: 30, speed: 40}
                     ).start();
                 }
             }
@@ -79,7 +79,7 @@ export default class DragScreen extends Component{
                     <Animated.View 
                         {...this.panResponder.panHandlers}
                         style={[this.state.pan.getLayout(), styles.circle]}>
-                        <Text style={styles.text}>Drag me!</Text>
+                        <Text style={styles.text}>Drag</Text>
                     </Animated.View>
                 </View>
             );
@@ -94,7 +94,7 @@ export default class DragScreen extends Component{
         this._confettiView.stopConfetti();
         Animated.spring(
             this.state.pan,
-            {toValue:{x:0,y:0}}
+            {toValue:{x:0,y:0}, bounciness: 30, speed: 10}
         ).start();
     }
 }
@@ -107,12 +107,13 @@ let styles = StyleSheet.create({
     },
     dropZone: {
         height: 100,
-        backgroundColor:'#2c3e50'
+        backgroundColor:'#03A9F4'
     },
     text: {
         marginTop: 25,
         marginLeft: 5,
         marginRight: 5,
+        fontSize: 22,
         textAlign: 'center',
         color: '#fff'
     },
@@ -122,7 +123,7 @@ let styles = StyleSheet.create({
         left: Window.width/2 - CIRCLE_RADIUS,
     },
     circle: {
-        backgroundColor: '#1abc9c',
+        backgroundColor: 'rgba(134, 65, 244, 0.8)',
         width: CIRCLE_RADIUS*2,
         height: CIRCLE_RADIUS*2,
         borderRadius: CIRCLE_RADIUS

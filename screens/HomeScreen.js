@@ -17,8 +17,8 @@ import {
 import { AreaChart, LineChart, BarChart, Grid, YAxis, HorizontalLine } from 'react-native-svg-charts'
 import * as shape from 'd3-shape'
 
-const HEADER_MAX_HEIGHT = 200;
-const HEADER_MIN_HEIGHT = 90;
+const HEADER_MAX_HEIGHT = 120;
+const HEADER_MIN_HEIGHT = 80;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 export default class HomeScreen extends React.Component {
@@ -34,7 +34,9 @@ export default class HomeScreen extends React.Component {
       data3: [ 0, 0, 0, 0, 0, 0, 0, 0 ],
       h: 110,
       collapsed: false,
-      scrollY: new Animated.Value(0)
+      scrollY: new Animated.Value(
+        Platform.OS === 'ios' ? -HEADER_MAX_HEIGHT : 0
+      )
     }
   }
 
@@ -53,30 +55,38 @@ export default class HomeScreen extends React.Component {
 
   render() {
     const headerHeight = this.state.scrollY.interpolate({
+      //inputRange: [0, HEADER_SCROLL_DISTANCE],
+      //outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
       inputRange: [0, HEADER_SCROLL_DISTANCE],
-      outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+      outputRange: [0, -HEADER_SCROLL_DISTANCE],
+      extrapolate: 'clamp',
+    });
+
+    const titleScale = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
+      outputRange: [1, 1, 0.8],
+      extrapolate: 'clamp',
+    });
+
+    const titleTranslate = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE - 20],
+      outputRange: [0, 0, -8],
       extrapolate: 'clamp',
     });
 
     return (
-      <View style={styles.container}>
-          <Animated.View style={[styles.topBar, {height: headerHeight}]}>
-            <View style={styles.topBarView}>
-              <Text style={styles.topBarText}>Our Home</Text>
-              {
-                !this.state.collapsed && 
-                <Text style={styles.topBarTextSmall}>Last 5 days. High 23ºC and Low 10ºC</Text>
-              }
-            </View>
-          </Animated.View>
-        <ScrollView 
-          style={styles.scrollContainer} 
+      <View style={styles.container}>          
+        <Animated.ScrollView 
+          style={styles.scrollContainer}
           contentContainerStyle={styles.contentContainer} 
-          scrollEventThrottle={16} 
-          onScroll={Animated.event(
-            [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}]
-          )}>
-          <Card
+          scrollEventThrottle={16}          
+          onScroll={
+            Animated.event(
+              [{
+                  nativeEvent: {contentOffset: {y: this.state.scrollY}}
+              }])
+        }>
+        <Card
             title='Living Room'
             featuredTitle='High 1, Low 2'> 
             <View style={{ height: 200, flexDirection: 'row' }}>
@@ -107,7 +117,7 @@ export default class HomeScreen extends React.Component {
             </Text>
           </Card>
           <Card
-            title='Cold Garage'>
+            title='Garage'>
             <AreaChart
                   style={{ height: 150 }}
                   data={ this.state.data2 }
@@ -122,7 +132,6 @@ export default class HomeScreen extends React.Component {
           </Card>
           <Card
             title='Master Bedroom'>
-
             <AreaChart
                   style={{ height: 150 }}
                   data={ this.state.data3 }
@@ -136,7 +145,27 @@ export default class HomeScreen extends React.Component {
               Average temperature is high. Lower desired temperature.
             </Text>           
           </Card>
-        </ScrollView>
+        </Animated.ScrollView>
+        <Animated.View 
+            style={[styles.topBar, 
+              //{height: headerHeight}]}>
+              { transform: [{ translateY: headerHeight }]}]}>
+        </Animated.View>
+
+        <Animated.View style={
+          [styles.topBarView,
+            {
+              transform: [
+              { scale: titleScale },
+              { translateY: titleTranslate }]
+            }
+          ]}>
+              <Text style={styles.topBarText}>Our Home</Text>
+              {
+                1 > 0 && 
+                <Text style={styles.topBarTextSmall}>Last 5 days. High 23ºC and Low 10ºC</Text>
+              }            
+         </Animated.View>
       </View>
     );
   }
@@ -239,23 +268,30 @@ styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: '#03A9F4',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    height: HEADER_MAX_HEIGHT,
   },
   topBarView: {
-    marginTop: 28,
-    height: HEADER_MAX_HEIGHT - 5,
+    position: 'absolute',
+    marginTop: 45,
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
   },
   topBarText: {
     backgroundColor: 'transparent',
     color: 'white',
-    fontSize: 18,
+    fontSize: 28,
     textAlign: 'center'
   },
   topBarTextSmall: {
-    fontSize: 12,
+    fontSize: 18,
     marginBottom: 6,
+    marginTop: 5,
+    color: "#F2F2F2",
     textAlign: 'center'
   },
   helpContainer: {
