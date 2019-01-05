@@ -46,11 +46,46 @@ export default class HomeScreen extends React.Component {
     this.state.data3 = [ -1, 2, -3, 22, 19, 20, 19, 18 ];
     setTimeout(() => {
       this.setState({state: this.state});
-    }, 1000);  
+    }, 250);  
   }
 
   componentDidMount() {
     this.setNewChartData();
+  }
+
+  _renderRoomContent(name, chartData) {
+    return (
+      <Card
+            title={name}
+            featuredTitle='High 1, Low 2'> 
+            <View style={{ height: 200, flexDirection: 'row' }}>
+              <YAxis
+                    data={ chartData }
+                    contentInset={{ top: 20, bottom: 20 }}
+                    svg={{
+                        fill: 'grey',
+                        fontSize: 10,
+                    }}
+                    numberOfTicks={ 8 }
+                    formatLabel={ value => `${value}ºC` }
+                />            
+              <BarChart
+                style={{ flex: 1 }}
+                animate
+                animationDuration={1000}
+                data={ this.state.data1 }
+                contentInset={{ top: 20, bottom: 20 }}
+                curve={ shape.curveNatural }
+                svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
+              >                
+              <Grid/>                   
+            </BarChart>
+            </View>
+            <Text style={{margin: 3, flex:2}}>
+              High: 23ºC Low: 18ºC Heat Requets: 10
+            </Text>
+          </Card>
+    );
   }
 
   render() {
@@ -86,65 +121,12 @@ export default class HomeScreen extends React.Component {
                   nativeEvent: {contentOffset: {y: this.state.scrollY}}
               }])
         }>
-        <Card
-            title='Living Room'
-            featuredTitle='High 1, Low 2'> 
-            <View style={{ height: 200, flexDirection: 'row' }}>
-              <YAxis
-                    data={ this.state.data1 }
-                    contentInset={{ top: 20, bottom: 20 }}
-                    svg={{
-                        fill: 'grey',
-                        fontSize: 10,
-                    }}
-                    numberOfTicks={ 8 }
-                    formatLabel={ value => `${value}ºC` }
-                />            
-              <BarChart
-                style={{ flex: 1 }}
-                animate
-                animationDuration={1000}
-                data={ this.state.data1 }
-                contentInset={{ top: 20, bottom: 20 }}
-                curve={ shape.curveNatural }
-                svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
-              >                
-              <Grid/>                   
-            </BarChart>
-            </View>
-            <Text style={{margin: 3, flex:2}}>
-              High: 23ºC Low: 18ºC Heat Requets: 10
-            </Text>
-          </Card>
-          <Card
-            title='Garage'>
-            <AreaChart
-                  style={{ height: 150 }}
-                  data={ this.state.data2 }
-                  contentInset={{ top: 30, bottom: 30 }}
-                  curve={ shape.curveNatural }
-                  svg={{ fill: 'rgba(23, 90, 244, 0.8)' }}>
-              <Grid/>
-            </AreaChart>
-            <Text style={{margin: 8}}>
-              Average temperature is high. Lower desired temperature.
-            </Text>           
-          </Card>
-          <Card
-            title='Master Bedroom'>
-            <AreaChart
-                  style={{ height: 150 }}
-                  data={ this.state.data3 }
-                  contentInset={{ top: 30, bottom: 30 }}
-                  curve={ shape.curveNatural }
-                  svg={{ fill: 'rgba(23, 90, 244, 0.8)' }}
-              >
-              <Grid/>
-            </AreaChart>
-            <Text style={{margin: 8}}>
-              Average temperature is high. Lower desired temperature.
-            </Text>           
-          </Card>
+        {this._renderRoomContent('Living Room', this.state.data1)}
+        {this._renderRoomContent('Master', this.state.data2)}
+        {this._renderRoomContent('Garage', this.state.data3)}
+        {this._renderRoomContent('Foyer', this.state.data3)}
+        {this._renderRoomContent('Basement', this.state.data3)}
+        {this._renderRoomContent('Office', this.state.data3)}
         </Animated.ScrollView>
         <Animated.View 
             style={[styles.topBar, 
