@@ -142,7 +142,7 @@ export default class HomeScreen extends React.Component {
               { translateY: titleTranslate }]
             }
           ]}>
-              <Text style={styles.topBarText}>Our Home</Text>
+              <Text style={styles.topBarText}>Comfort</Text>
               {
                 1 > 0 && 
                 <Text style={styles.topBarTextSmall}>Last 5 days. High 23ºC and Low 10ºC</Text>
