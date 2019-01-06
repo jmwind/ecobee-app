@@ -10,15 +10,13 @@ import {
   Animated
 } from 'react-native';
 import { 
-  Card, 
-  Button, 
-  Icon 
+  Card   
 } from 'react-native-elements';
 import { AreaChart, LineChart, BarChart, Grid, YAxis, HorizontalLine } from 'react-native-svg-charts'
 import * as shape from 'd3-shape'
 
 const HEADER_MAX_HEIGHT = 120;
-const HEADER_MIN_HEIGHT = 80;
+const HEADER_MIN_HEIGHT = 78;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 export default class HomeScreen extends React.Component {
@@ -56,8 +54,7 @@ export default class HomeScreen extends React.Component {
   _renderRoomContent(name, chartData) {
     return (
       <Card
-            title={name}
-            featuredTitle='High 1, Low 2'> 
+            title={name}> 
             <View style={{ height: 200, flexDirection: 'row' }}>
               <YAxis
                     data={ chartData }
@@ -71,7 +68,7 @@ export default class HomeScreen extends React.Component {
                 />            
               <BarChart
                 style={{ flex: 1 }}
-                animate
+                animate={true}
                 animationDuration={1000}
                 data={ this.state.data1 }
                 contentInset={{ top: 20, bottom: 20 }}
@@ -90,10 +87,14 @@ export default class HomeScreen extends React.Component {
 
   render() {
     const headerHeight = this.state.scrollY.interpolate({
-      //inputRange: [0, HEADER_SCROLL_DISTANCE],
-      //outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
       inputRange: [0, HEADER_SCROLL_DISTANCE],
       outputRange: [0, -HEADER_SCROLL_DISTANCE],
+      extrapolate: 'clamp',
+    });
+
+    const marginTopMove = this.state.scrollY.interpolate({
+      inputRange: [0, HEADER_SCROLL_DISTANCE],
+      outputRange: [HEADER_MAX_HEIGHT, HEADER_MAX_HEIGHT - HEADER_SCROLL_DISTANCE],
       extrapolate: 'clamp',
     });
 
@@ -104,51 +105,58 @@ export default class HomeScreen extends React.Component {
     });
 
     const titleTranslate = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE - 20],
+      inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
       outputRange: [0, 0, -8],
       extrapolate: 'clamp',
     });
 
-    return (
-      <View style={styles.container}>          
-        <Animated.ScrollView 
-          style={styles.scrollContainer}
-          contentContainerStyle={styles.contentContainer} 
-          scrollEventThrottle={16}          
-          onScroll={
-            Animated.event(
-              [{
-                  nativeEvent: {contentOffset: {y: this.state.scrollY}}
-              }])
-        }>
-        {this._renderRoomContent('Living Room', this.state.data1)}
-        {this._renderRoomContent('Master', this.state.data2)}
-        {this._renderRoomContent('Garage', this.state.data3)}
-        {this._renderRoomContent('Foyer', this.state.data3)}
-        {this._renderRoomContent('Basement', this.state.data3)}
-        {this._renderRoomContent('Office', this.state.data3)}
-        </Animated.ScrollView>
-        <Animated.View 
-            style={[styles.topBar, 
-              //{height: headerHeight}]}>
-              { transform: [{ translateY: headerHeight }]}]}>
-        </Animated.View>
+    return (   
+        <View style={styles.container}>
 
-        <Animated.View style={
-          [styles.topBarView,
-            {
-              transform: [
-              { scale: titleScale },
-              { translateY: titleTranslate }]
-            }
-          ]}>
-              <Text style={styles.topBarText}>Comfort</Text>
+          <Animated.View 
+              style={[styles.topBar, 
+                { transform: [{ translateY: headerHeight }]}]}
+              onPress={() => { this.refs._scrollView.scrollTo(0); }}>
+          </Animated.View>   
+
+          <Animated.View 
+              style={[
+                styles.topBarView,
+                {
+                  transform: [
+                  { scale: titleScale },
+                  { translateY: titleTranslate }]
+                }              
+              ]}
+              onPress={() => { this.refs._scrollView.scrollTo(0); }}>
+                <Text style={styles.topBarText}>Comfort</Text>                  
+                <Text style={styles.topBarTextSmall}>Last 5 days. High 23ºC and Low 10ºC</Text>                  
+          </Animated.View> 
+          
+
+          <Animated.ScrollView 
+            style={[
+              styles.scrollContainer,
               {
-                1 > 0 && 
-                <Text style={styles.topBarTextSmall}>Last 5 days. High 23ºC and Low 10ºC</Text>
-              }            
-         </Animated.View>
-      </View>
+                marginTop: marginTopMove
+              }
+            ]} 
+            scrollEventThrottle={16}   
+            ref='_scrollView'            
+            onScroll={
+              Animated.event(
+                [{
+                    nativeEvent: {contentOffset: {y: this.state.scrollY}}
+                }])
+            }>
+            {this._renderRoomContent('Living Room', this.state.data1)}
+            {this._renderRoomContent('Master', this.state.data2)}
+            {this._renderRoomContent('Garage', this.state.data3)}
+            {this._renderRoomContent('Foyer', this.state.data3)}
+            {this._renderRoomContent('Basement', this.state.data3)}
+            {this._renderRoomContent('Office', this.state.data3)}
+          </Animated.ScrollView>                      
+         </View>         
     );
   }
 
@@ -166,12 +174,11 @@ export default class HomeScreen extends React.Component {
 styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'red',
   },
   scrollContainer: {
-    marginTop: HEADER_MAX_HEIGHT,
-    flex: 1,
-    backgroundColor: '#fff',
+    marginTop: HEADER_MAX_HEIGHT - 5,
+    backgroundColor: '#f9f9f9',
   },
   developmentModeText: {
     marginBottom: 20,
@@ -181,7 +188,7 @@ styles = StyleSheet.create({
     textAlign: 'center',
   },
   contentContainer: {
-    paddingTop: 15,
+    paddingTop: 0,
   },
   welcomeContainer: {
     alignItems: 'center',
@@ -249,9 +256,16 @@ styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#03A9F4',
+    backgroundColor: '#f9f9f9',
     overflow: 'hidden',
     height: HEADER_MAX_HEIGHT,
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 4,
+      height: 3
+    },
+    shadowRadius: 3,
+    shadowOpacity: 0.5
   },
   topBarView: {
     position: 'absolute',
@@ -259,21 +273,21 @@ styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'transparent',
+    backgroundColor: '#f9f9f9',
     alignItems: 'center',
     justifyContent: 'center',
   },
   topBarText: {
     backgroundColor: 'transparent',
-    color: 'white',
+    color: 'black',
     fontSize: 28,
     textAlign: 'center'
   },
   topBarTextSmall: {
-    fontSize: 18,
+    fontSize: 14,
     marginBottom: 6,
     marginTop: 5,
-    color: "#F2F2F2",
+    color: "black",
     textAlign: 'center'
   },
   helpContainer: {
