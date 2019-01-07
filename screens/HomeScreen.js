@@ -47,8 +47,20 @@ export default class HomeScreen extends React.Component {
     }, 250);  
   }
 
+  componentWillMount() {
+    this.props.navigation.setParams({
+      scrollToTop: this._scrollToTop
+    });
+  }
+
   componentDidMount() {
     this.setNewChartData();
+  }
+
+  _scrollToTop = () => {
+    if (this.scrollView) {
+      this.scrollView.scrollTo({x: 0, y: 0, animated: true});
+    }
   }
 
   _renderRoomContent(name, chartData) {
@@ -116,7 +128,7 @@ export default class HomeScreen extends React.Component {
           <Animated.View 
               style={[styles.topBar, 
                 { transform: [{ translateY: headerHeight }]}]}
-              onPress={() => { this.refs._scrollView.scrollTo(0); }}>
+              onPress={() => { this.scrollview.scrollTo(0); }}>
           </Animated.View>   
 
           <Animated.View 
@@ -128,7 +140,7 @@ export default class HomeScreen extends React.Component {
                   { translateY: titleTranslate }]
                 }              
               ]}
-              onPress={() => { this.refs._scrollView.scrollTo(0); }}>
+              onPress={() => { this.scrollviewscrollTo(0); }}>
                 <Text style={styles.topBarText}>Comfort</Text>                  
                 <Text style={styles.topBarTextSmall}>Last 5 days. High 23ºC and Low 10ºC</Text>                  
           </Animated.View> 
@@ -142,7 +154,7 @@ export default class HomeScreen extends React.Component {
               }
             ]} 
             scrollEventThrottle={16}   
-            ref='_scrollView'            
+            ref={(scrollview) => { this.scrollview = scrollview }}            
             onScroll={
               Animated.event(
                 [{

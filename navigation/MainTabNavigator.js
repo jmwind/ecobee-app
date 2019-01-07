@@ -8,12 +8,25 @@ import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import DragScreen from '../screens/DragScreen';
 
+const _tabBarOnPress = (tab, jumpToIndex) => {  
+  console.log("Tab clicked: " + JSON.stringify(tab));
+  console.log("Tab clicked: " + jumpToIndex);
+  if (tab.index === 0) { // inside 1st screen of StackNavigator
+    const stackNavigation = tab.routes[0]; // same as 'this.props.navigation.state' inside component
+    if (!!stackNavigation && !!stackNavigation.params && !!stackNavigation.params.scrollToTop) {
+      stackNavigation.params.scrollToTop();
+    }
+  }  
+  //jumpToIndex(tab.index);
+};
+
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
 });
 
 HomeStack.navigationOptions = {
   tabBarLabel: 'Rooms',
+  //tabBarOnPress: _tabBarOnPress,
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
